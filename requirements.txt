@@ -3,3 +3,4 @@ Pillow
 python-decouple
 django-unfold
 xlsxwriter
+openpyxl
