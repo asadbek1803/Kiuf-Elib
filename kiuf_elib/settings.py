@@ -123,6 +123,11 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+AUTHENTICATION_BACKENDS = [
+    'accounts.authentication.HemisIDBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
