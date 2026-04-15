@@ -1,0 +1,10 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+  {{ block.super }}
+  {% if import_url %}
+  <a href="{{ import_url }}" class="button" style="background: #7c3aed; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+    📥 Import
+  </a>
+  {% endif %}
+{% endblock %}

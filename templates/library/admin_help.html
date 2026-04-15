@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel Yordami{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4" style="font-size: 32px; color: #1a5fbd;">📚 Admin Panel Yordami</h1>
+            <p class="mb-5" style="font-size: 18px; color: #666;">KIUF Elektron Kutubxona admin paneli bo'limlari haqida ma'lumot</p>
+            
+            <div class="help-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                {% for section_name, section_data in help_content.items %}
+                <div class="help-card" style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #1a5fbd; transition: transform 0.3s, box-shadow 0.3s;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <span style="font-size: 40px; margin-right: 15px;">{{ section_data.icon }}</span>
+                        <h2 style="margin: 0; font-size: 24px; color: #1a5fbd;">{{ section_name }}</h2>
+                    </div>
+                    
+                    <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">{{ section_data.description }}</p>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1a5fbd;">Imkoniyatlar:</h3>
+                        <ul style="margin: 0; padding-left: 20px; color: #555;">
+                            {% for feature in section_data.features %}
+                            <li style="margin-bottom: 5px;">{{ feature }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div style="margin-top: 40px; padding: 20px; background: #e8f4fd; border-radius: 12px; border-left: 4px solid #1a5fbd;">
+                <h3 style="margin: 0 0 10px 0; color: #1a5fbd;">💡 Qo'shimcha ma'lumot</h3>
+                <p style="margin: 0; color: #666; line-height: 1.6;">
+                    Admin panel orqali barcha ma'lumotlarni boshqarish mumkin. Har bir bo'limda qidiruv va filter funksiyalari mavjud.
+                    Talabalar ma'lumotlarini Excel yoki CSV formatida eksport qilish mumkin.
+                </p>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center;">
+                <a href="/admin/" class="btn btn-primary" style="background: #1a5fbd; color: white; padding: 10px 30px; border-radius: 8px; text-decoration: none; display: inline-block;">Admin Panelga Qaytish</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.help-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}

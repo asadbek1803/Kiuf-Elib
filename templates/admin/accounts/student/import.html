@@ -1,0 +1,80 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div style="max-width: 600px;">
+  <h1>📥 Talabalarni import qilish</h1>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert" style="
+        padding: 10px 16px; margin-bottom: 10px; border-radius: 6px;
+        background: {% if message.tags == 'error' %}#fee2e2{% elif message.tags == 'warning' %}#fef9c3{% else %}#dcfce7{% endif %};
+        color: {% if message.tags == 'error' %}#991b1b{% elif message.tags == 'warning' %}#854d0e{% else %}#166534{% endif %};
+        border-left: 4px solid {% if message.tags == 'error' %}#ef4444{% elif message.tags == 'warning' %}#eab308{% else %}#22c55e{% endif %};">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div style="background:#1e2837; border-radius:10px; padding:24px; margin-bottom:20px;">
+    <p style="color:#94a3b8; margin-bottom:16px;">
+      Excel (.xlsx) yoki CSV (.csv) formatdagi faylni yuklang.<br>
+      Fayl quyidagi ustunlarga ega bo'lishi kerak:
+    </p>
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr style="background:#334155; color:#e2e8f0;">
+          <th style="padding:8px 12px; text-align:left;">Ustun</th>
+          <th style="padding:8px 12px; text-align:left;">Misol</th>
+          <th style="padding:8px 12px; text-align:left;">Majburiy</th>
+        </tr>
+      </thead>
+      <tbody style="color:#cbd5e1;">
+        {% for row in "123456"|make_list %}
+        <tr style="border-top:1px solid #334155;">
+          {% if forloop.counter == 1 %}<td style="padding:8px 12px;">HEMIS ID</td><td style="padding:8px 12px;">2024001</td><td style="padding:8px 12px; color:#4ade80;">✓ Ha</td>
+          {% elif forloop.counter == 2 %}<td style="padding:8px 12px;">To'liq ism</td><td style="padding:8px 12px;">Ali Valiyev</td><td style="padding:8px 12px; color:#4ade80;">✓ Ha</td>
+          {% elif forloop.counter == 3 %}<td style="padding:8px 12px;">Fakultet</td><td style="padding:8px 12px;">IT</td><td style="padding:8px 12px; color:#94a3b8;">— Yo'q</td>
+          {% elif forloop.counter == 4 %}<td style="padding:8px 12px;">Mutaxassislik</td><td style="padding:8px 12px;">Software Engineering</td><td style="padding:8px 12px; color:#94a3b8;">— Yo'q</td>
+          {% elif forloop.counter == 5 %}<td style="padding:8px 12px;">Kurs</td><td style="padding:8px 12px;">2</td><td style="padding:8px 12px; color:#94a3b8;">— Yo'q</td>
+          {% elif forloop.counter == 6 %}<td style="padding:8px 12px;">Faol</td><td style="padding:8px 12px;">Ha / Yo'q</td><td style="padding:8px 12px; color:#94a3b8;">— Yo'q</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Shablon yuklab olish -->
+  <a href="{{ template_url }}" style="
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 18px; margin-bottom:20px; border-radius:8px;
+    background:#1d4ed8; color:white; text-decoration:none; font-size:14px;">
+    📄 Namuna shablon yuklab olish (.xlsx)
+  </a>
+
+  <!-- Upload form -->
+  <form method="post" enctype="multipart/form-data" style="background:#1e2837; border-radius:10px; padding:24px;">
+    {% csrf_token %}
+    <label style="display:block; color:#e2e8f0; font-size:14px; margin-bottom:10px; font-weight:500;">
+      Fayl tanlang (.xlsx yoki .csv):
+    </label>
+    <input type="file" name="import_file" accept=".xlsx,.xls,.csv" required
+      style="display:block; width:100%; padding:10px; border-radius:8px;
+             background:#0f172a; color:#e2e8f0; border:1px solid #334155;
+             font-size:14px; margin-bottom:16px; box-sizing:border-box;">
+    <button type="submit" style="
+      padding:10px 24px; background:#7c3aed; color:white;
+      border:none; border-radius:8px; cursor:pointer; font-size:15px; font-weight:500;">
+      ⬆ Yuklash va import qilish
+    </button>
+  </form>
+
+  <div style="margin-top:16px;">
+    <a href="{% url 'admin:accounts_student_changelist' %}" style="color:#94a3b8; font-size:13px;">
+      ← Talabalar ro'yxatiga qaytish
+    </a>
+  </div>
+</div>
+{% endblock %}

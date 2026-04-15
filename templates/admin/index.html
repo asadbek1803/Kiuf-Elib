@@ -1,0 +1,11 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+{{ block.super }}
+
+<div style="margin: 20px 0; padding: 20px; background: #e8f4fd; border-radius: 12px; border-left: 4px solid #1a5fbd;">
+    <h3 style="margin: 0 0 10px 0; color: #1a5fbd;">📚 Admin Panel Yordami</h3>
+    <p style="margin: 0 0 15px 0; color: #666;">Admin panel bo'limlari haqida batafsil ma'lumot olish uchun yordam bo'limiga o'ting.</p>
+    <a href="/admin-help/" style="background: #1a5fbd; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-block;">Yordamni Ko'rish</a>
+</div>
+{% endblock %}
