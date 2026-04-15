@@ -5,3 +5,4 @@ django-unfold
 xlsxwriter
 openpyxl
 gunicorn
+whitenoise

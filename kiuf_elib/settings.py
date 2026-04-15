@@ -165,6 +165,7 @@ LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'library:home'
 LOGOUT_REDIRECT_URL = 'library:home'
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Session settings
 SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_SAVE_EVERY_REQUEST = True
