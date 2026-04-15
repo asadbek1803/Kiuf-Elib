@@ -128,6 +128,12 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+# CSRF Settings
+CSRF_TRUSTED_ORIGINS = [
+    'https://itopik.uz',
+    'https://www.itopik.uz',
+]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
