@@ -19,8 +19,8 @@ class CategoryAdmin(ModelAdmin):
 
 @admin.register(Book)
 class BookAdmin(ModelAdmin):
-    list_display = ['title', 'author', 'category', 'badge', 'read_count', 'download_count', 'rating', 'is_published', 'created_at']
-    list_filter = ['category', 'badge', 'is_published', 'created_at']
+    list_display = ['title', 'author', 'cover_image', 'category', 'badge', 'read_count', 'download_count', 'rating', 'is_published', 'created_at']
+    list_filter = ['category', 'badge', 'is_published', 'is_available', 'created_at']
     search_fields = ['title', 'author', 'description']
     list_editable = ['is_published']
     ordering = ['-created_at']
@@ -28,7 +28,7 @@ class BookAdmin(ModelAdmin):
     
     fieldsets = (
         ('Asosiy ma\'lumotlar', {
-            'fields': ('title', 'author', 'description', 'category', 'cover_color')
+            'fields': ('title', 'author', 'description', 'category', 'cover_color', 'cover_image')
         }),
         ('Media fayllar', {
             'fields': ('file',)
@@ -37,7 +37,7 @@ class BookAdmin(ModelAdmin):
             'fields': ('read_count', 'download_count', 'rating', 'badge')
         }),
         ('Nashr', {
-            'fields': ('is_published',)
+            'fields': ('is_published', 'is_available')
         }),
     )
     
@@ -103,8 +103,8 @@ class BookAdmin(ModelAdmin):
 
 @admin.register(ReadingHistory)
 class ReadingHistoryAdmin(ModelAdmin):
-    list_display = ['student', 'book', 'progress', 'last_page', 'last_read']
-    list_filter = ['last_read', 'progress']
+    list_display = ['student', 'book', 'last_read']
+    list_filter = ['last_read']
     search_fields = ['student__full_name', 'student__hemis_id', 'book__title']
     ordering = ['-last_read']
     raw_id_fields = ['student', 'book']

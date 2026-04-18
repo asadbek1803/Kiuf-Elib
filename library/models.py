@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.db.models import Avg
 
 User = get_user_model()
 
@@ -26,9 +27,8 @@ class Category(models.Model):
 
 class Book(models.Model):
     BADGE_CHOICES = [
-        ('new', 'NEW'),
-        ('hot', 'HOT'),
-        ('free', 'FREE'),
+        ('new', 'Yangi'),
+        ('hot', 'Mashhur'),
         ('pdf', 'PDF'),
     ]
 
@@ -37,11 +37,14 @@ class Book(models.Model):
     description = models.TextField(verbose_name="Tavsif")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='books', verbose_name="Kategoriya")
     cover_color = models.CharField(max_length=7, default="#28a745", verbose_name="Cover rangi")
+    cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True, verbose_name="Cover rasmi")
     file = models.FileField(upload_to='books/', verbose_name="PDF fayl")
     badge = models.CharField(max_length=10, choices=BADGE_CHOICES, blank=True, verbose_name="Belgi")
     rating = models.FloatField(default=0.0, verbose_name="Reyting")
+    average_rating = models.FloatField(default=0.0, verbose_name="O'rtacha reyting")
     read_count = models.IntegerField(default=0, verbose_name="O'qilganlar soni")
     download_count = models.IntegerField(default=0, verbose_name="Yuklab olishlar soni")
+    is_available = models.BooleanField(default=True, verbose_name="Kutubxonada bormi")
     is_published = models.BooleanField(default=True, verbose_name="Nashr qilingan")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
 
@@ -56,12 +59,16 @@ class Book(models.Model):
     def get_absolute_url(self):
         return reverse('library:book_detail', kwargs={'pk': self.pk})
 
+    def update_average_rating(self):
+        """O'rtacha reytingni yangilash"""
+        ratings = self.book_ratings.aggregate(avg_rating=Avg('rating'))
+        self.average_rating = ratings['avg_rating'] or 0.0
+        self.save(update_fields=['average_rating'])
+
 
 class ReadingHistory(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reading_history')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reading_history')
-    progress = models.IntegerField(default=0, verbose_name="Progress (%)")
-    last_page = models.IntegerField(default=1, verbose_name="Oxirgi sahifa")
     last_read = models.DateTimeField(auto_now=True, verbose_name="Oxirgi o'qilgan vaqt")
 
     class Meta:
@@ -72,6 +79,26 @@ class ReadingHistory(models.Model):
 
     def __str__(self):
         return f"{self.student.full_name} - {self.book.title}"
+
+
+class BookRating(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='book_ratings')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book_ratings')
+    rating = models.IntegerField(verbose_name="Reyting (1-5)")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Reyting qo'yilgan vaqt")
+
+    class Meta:
+        verbose_name = "Kitob reytingi"
+        verbose_name_plural = "Kitob reytinglari"
+        unique_together = ['student', 'book']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.student.full_name} - {self.book.title} ({self.rating})"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.book.update_average_rating()
 
 
 class SavedBook(models.Model):

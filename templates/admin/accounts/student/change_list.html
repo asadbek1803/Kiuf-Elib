@@ -2,9 +2,26 @@
 
 {% block object-tools %}
   {{ block.super }}
-  {% if import_url %}
-  <a href="{{ import_url }}" class="button" style="background: #7c3aed; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-    📥 Import
-  </a>
-  {% endif %}
+  <div style="display: inline-flex; gap: 8px; margin-left: 8px;">
+    {% if import_url %}
+    <a href="{{ import_url }}" class="button" style="background: #7c3aed; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+      📥 Import
+    </a>
+    {% endif %}
+    {% if add_url %}
+    <a href="{{ add_url }}" class="button" style="background: #22c55e; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+      ➕ Qo'shish
+    </a>
+    {% endif %}
+    {% if add_superuser_url %}
+    <a href="{{ add_superuser_url }}" class="button" style="background: #8b5cf6; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+      🔐 SuperUser
+    </a>
+    {% endif %}
+    {% if delete_url %}
+    <a href="{{ delete_url }}" class="button" style="background: #ef4444; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+      🗑️ O'chirish
+    </a>
+    {% endif %}
+  </div>
 {% endblock %}

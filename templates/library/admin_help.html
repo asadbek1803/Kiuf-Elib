@@ -3,53 +3,295 @@
 {% block title %}Admin Panel Yordami{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="mb-4" style="font-size: 32px; color: #1a5fbd;">📚 Admin Panel Yordami</h1>
-            <p class="mb-5" style="font-size: 18px; color: #666;">KIUF Elektron Kutubxona admin paneli bo'limlari haqida ma'lumot</p>
-            
-            <div class="help-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                {% for section_name, section_data in help_content.items %}
-                <div class="help-card" style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #1a5fbd; transition: transform 0.3s, box-shadow 0.3s;">
-                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <span style="font-size: 40px; margin-right: 15px;">{{ section_data.icon }}</span>
-                        <h2 style="margin: 0; font-size: 24px; color: #1a5fbd;">{{ section_name }}</h2>
-                    </div>
-                    
-                    <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">{{ section_data.description }}</p>
-                    
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1a5fbd;">Imkoniyatlar:</h3>
-                        <ul style="margin: 0; padding-left: 20px; color: #555;">
-                            {% for feature in section_data.features %}
-                            <li style="margin-bottom: 5px;">{{ feature }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            
-            <div style="margin-top: 40px; padding: 20px; background: #e8f4fd; border-radius: 12px; border-left: 4px solid #1a5fbd;">
-                <h3 style="margin: 0 0 10px 0; color: #1a5fbd;">💡 Qo'shimcha ma'lumot</h3>
-                <p style="margin: 0; color: #666; line-height: 1.6;">
-                    Admin panel orqali barcha ma'lumotlarni boshqarish mumkin. Har bir bo'limda qidiruv va filter funksiyalari mavjud.
-                    Talabalar ma'lumotlarini Excel yoki CSV formatida eksport qilish mumkin.
-                </p>
-            </div>
-            
-            <div style="margin-top: 30px; text-align: center;">
-                <a href="/admin/" class="btn btn-primary" style="background: #1a5fbd; color: white; padding: 10px 30px; border-radius: 8px; text-decoration: none; display: inline-block;">Admin Panelga Qaytish</a>
-            </div>
-        </div>
+<div class="admin-help-body" style="position:relative;min-height:600px;padding:20px 0">
+  <h2 class="sr-only">Admin panel bo'limlari — har bir kartochkani bosib batafsil ma'lumot oling</h2>
+
+  <div class="admin-help-wrap" id="main-content">
+    <div class="admin-help-hero">
+      <h1>Admin panel yordami</h1>
+      <p>Qaysi bo'lim kerakligini bilish uchun kartochkani bosing</p>
     </div>
+
+    <div class="admin-help-grid">
+      <div class="admin-help-card" onclick="openModal('books')">
+        <div class="admin-help-card-top">
+          <div class="admin-help-icon" style="background:#EAF3DE">
+            <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="2" rx="1" fill="#3B6D11"/><rect x="2" y="6" width="8" height="2" rx="1" fill="#3B6D11"/><rect x="2" y="10" width="10" height="2" rx="1" fill="#3B6D11"/></svg>
+          </div>
+          <h2>Kitoblar boshqaruvi</h2>
+        </div>
+        <p>Kitoblarni qo'shish, tahrirlash va boshqarish</p>
+        <div class="admin-help-hint"><svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v4M3 5h4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> Batafsil ko'rish</div>
+      </div>
+
+      <div class="admin-help-card" onclick="openModal('user')">
+        <div class="admin-help-card-top">
+          <div class="admin-help-icon" style="background:#FBEAF0">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" fill="#993556"/><path d="M2 13c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="#993556" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </div>
+          <h2>Talabalar boshqaruvi</h2>
+        </div>
+        <p>Talabalarni import, export va boshqarish</p>
+        <div class="admin-help-hint"><svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v4M3 5h4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> Batafsil ko'rish</div>
+      </div>
+
+      <div class="admin-help-card" onclick="openModal('announce')">
+        <div class="admin-help-card-top">
+          <div class="admin-help-icon" style="background:#FAEEDA">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="#854F0B" stroke-width="1.2"/><path d="M5 6h6M5 8.5h4" stroke="#854F0B" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </div>
+          <h2>E'lonlar boshqaruvi</h2>
+        </div>
+        <p>Bildirishnomalarni qo'shish va boshqarish</p>
+        <div class="admin-help-hint"><svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v4M3 5h4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> Batafsil ko'rish</div>
+      </div>
+
+      <div class="admin-help-card" onclick="openModal('category')">
+        <div class="admin-help-card-top">
+          <div class="admin-help-icon" style="background:#EEEDFE">
+            <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="#534AB7"/><rect x="9" y="2" width="5" height="5" rx="1" fill="#534AB7"/><rect x="2" y="9" width="5" height="5" rx="1" fill="#534AB7"/><rect x="9" y="9" width="5" height="5" rx="1" fill="#534AB7"/></svg>
+          </div>
+          <h2>Kategoriyalar boshqaruvi</h2>
+        </div>
+        <p>Kitob kategoriyalarini yaratish va boshqarish</p>
+        <div class="admin-help-hint"><svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v4M3 5h4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> Batafsil ko'rish</div>
+      </div>
+
+      <div class="admin-help-card" onclick="openModal('report')">
+        <div class="admin-help-card-top">
+          <div class="admin-help-icon" style="background:#E6F1FB">
+            <svg viewBox="0 0 16 16" fill="none"><polyline points="2,12 5,8 8,10 11,5 14,7" stroke="#185FA5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </div>
+          <h2>Hisobotlar va statistika</h2>
+        </div>
+        <p>Faoliyat statistikasi va eksport qilish</p>
+        <div class="admin-help-hint"><svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v4M3 5h4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> Batafsil ko'rish</div>
+      </div>
+
+      <div class="admin-help-card" onclick="openModal('settings')">
+        <div class="admin-help-card-top">
+          <div class="admin-help-icon" style="background:#E1F5EE">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="#0F6E56" stroke-width="1.3"/><path d="M8 2v1.5M8 12.5V14M2 8h1.5M12.5 8H14M3.5 3.5l1 1M11.5 11.5l1 1M3.5 12.5l1-1M11.5 4.5l1-1" stroke="#0F6E56" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <h2>Boshqa bo'limlar</h2>
+        </div>
+        <p>Barcha admin panel bo'limlari haqida ma'lumot</p>
+        <div class="admin-help-hint"><svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v4M3 5h4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> Batafsil ko'rish</div>
+      </div>
+    </div>
+
+    <div class="admin-help-info">
+      <p>Har bir bo'limda qidiruv va filtr mavjud. Ma'lumotlarni <b style="color:var(--color-text-primary);font-weight:500">Excel / CSV</b> formatida eksport qilish mumkin.</p>
+    </div>
+  </div>
+
+  <div class="admin-help-overlay" id="overlay" onclick="closeOnBg(event)">
+    <div class="admin-help-modal" id="modal">
+      <div class="admin-help-modal-head">
+        <div class="admin-help-modal-head-left">
+          <div class="admin-help-icon" id="modal-icon" style="width:30px;height:30px"></div>
+          <h2 id="modal-title"></h2>
+        </div>
+        <button class="admin-help-close-btn" onclick="closeModal()">&#x2715;</button>
+      </div>
+      <div class="admin-help-modal-body" id="modal-body"></div>
+    </div>
+  </div>
 </div>
 
-<style>
-.help-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+<script>
+const data = {
+  books: {
+    title: "Kitoblar boshqaruvi",
+    iconBg: "#EAF3DE",
+    icon: `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><rect x="2" y="2" width="12" height="2" rx="1" fill="#3B6D11"/><rect x="2" y="6" width="8" height="2" rx="1" fill="#3B6D11"/><rect x="2" y="10" width="10" height="2" rx="1" fill="#3B6D11"/></svg>`,
+    body: `
+      <div class="admin-help-section-label">Majburiy maydonlar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Kitob nomi (title) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">To'liq va aniq sarlavha. Masalan: "Algoritm va ma'lumotlar strukturasi"</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Muallif (author) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Muallif ismi, vergul bilan ajratiladi</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Kategoriya (category) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Tizimda mavjud kategoriyalardan tanlash</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">PDF fayl (file) <span class="admin-help-badge admin-help-badge-file">Fayl</span></div><div class="admin-help-field-desc">Kitobning asosiy matni PDF formatida</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Ixtiyoriy maydonlar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot" style="background:#B4B2A9"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Tavsif (description) <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">Kitob haqida qisqacha ma'lumot</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot" style="background:#B4B2A9"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Muqova rasmi (cover_image) <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">Kitob muqovasi rasmi</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot" style="background:#B4B2A9"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Rang (cover_color) <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">Muqova rang kodi (hex format)</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot" style="background:#B4B2A9"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Belgi (badge) <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">"Yangi", "Mashhur" kabi belgilar</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Funksiyalar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Qidiruv</div><div class="admin-help-field-desc">Kitob nomi, muallif va tavsif bo'yicha qidirish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Filter</div><div class="admin-help-field-desc">Kategoriya, belgi, nashr holati bo'yicha filter</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Eksport</div><div class="admin-help-field-desc">Excel va CSV formatida eksport qilish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">O'qish statistikasi</div><div class="admin-help-field-desc">read_count va download_count (faqat ko'rish)</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Qo'shish tartibi</div>
+      <div class="admin-help-steps">
+        <div class="admin-help-step"><div class="admin-help-step-num">1</div><div class="admin-help-step-text"><b>Kitoblar</b> bo'limiga o'tib <b>"+ QO'SHISH"</b> tugmasini bosing</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">2</div><div class="admin-help-step-text">Majburiy maydonlarni to'ldiring</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">3</div><div class="admin-help-step-text">Kategoriya tanlang</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">4</div><div class="admin-help-step-text"><b>"SAQLASH"</b> tugmasini bosing</div></div>
+      </div>
+      <div class="admin-help-note">is_published tugmasi orqali kitobni foydalanuvchilarga ko'rsatish yoki yashirish mumkin.</div>
+    `
+  },
+  user: {
+    title: "Talabalar boshqaruvi",
+    iconBg: "#FBEAF0",
+    icon: `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><circle cx="8" cy="5" r="3" fill="#993556"/><path d="M2 13c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="#993556" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+    body: `
+      <div class="admin-help-section-label">Majburiy maydonlar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">HEMIS ID <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Talabaning unikal identifikatori (max 20 ta belgi)</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">To'liq ism (full_name) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Talabaning ismi va familiyasi (max 100 ta belgi)</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Fakultet (faculty) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Talabaning fakulteti (max 100 ta belgi)</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Kurs (year) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Talabaning o'qish yili (raqam)</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Ixtiyoriy maydonlar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot" style="background:#B4B2A9"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Tug'ilgan kun (birth_date) <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">Talabaning tug'ilgan sanasi</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Ruxsatlar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">is_active <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">Tizimga kirish huquqi (default: True)</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">is_staff <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">Admin panelga kirish huquqi</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">is_superuser <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">To'liq boshqaruv huquqi</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Funksiyalar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Import</div><div class="admin-help-field-desc">Excel yoki CSV orqali massiv import</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Export</div><div class="admin-help-field-desc">Excel va CSV formatida eksport</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Qidiruv</div><div class="admin-help-field-desc">HEMIS ID, ism, fakultet bo'yicha qidirish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Filter</div><div class="admin-help-field-desc">Faollik, fakultet, kurs bo'yicha filter</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Maxsus funksiyalar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Talaba qo'shish</div><div class="admin-help-field-desc">"➕ Qo'shish" tugmasi orqali yangi talaba qo'shish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Talaba o'chirish</div><div class="admin-help-field-desc">"🗑️ O'chirish" tugmasi orqali HEMIS ID bo'yicha o'chirish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">SuperUser qo'shish</div><div class="admin-help-field-desc">"🔐 SuperUser" tugmasi orqali admin huquqi berish</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Import qilish tartibi</div>
+      <div class="admin-help-steps">
+        <div class="admin-help-step"><div class="admin-help-step-num">1</div><div class="admin-help-step-text"><b>"📥 Import"</b> tugmasini bosing</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">2</div><div class="admin-help-step-text">Shablonni yuklab oling</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">3</div><div class="admin-help-step-text">Excel/CSV faylni to'ldiring va yuklang</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">4</div><div class="admin-help-step-text">Avtomatik import qilinadi</div></div>
+      </div>
+      <div class="admin-help-note">Parol import qilinmaydi. Import qilingan talabalar parolsiz bo'ladi, keyin SuperUser orqali parol berish mumkin.</div>
+    `
+  },
+  announce: {
+    title: "E'lonlar boshqaruvi",
+    iconBg: "#FAEEDA",
+    icon: `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><path d="M3 2h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="#854F0B" stroke-width="1.2"/><path d="M5 6h6M5 8.5h4" stroke="#854F0B" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+    body: `
+      <div class="admin-help-section-label">Majburiy maydonlar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Sarlavha (title) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">E'lon sarlavhasi</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Matn (body) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">E'lon asosiy matni</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Ixtiyoriy maydonlar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot" style="background:#B4B2A9"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Emoji <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">E'lon uchun emoji (masalan: 📢)</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot" style="background:#B4B2A9"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Rang (color) <span class="admin-help-badge admin-help-badge-opt">Ixtiyoriy</span></div><div class="admin-help-field-desc">E'lon rang kodi (hex format)</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Funksiyalar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Qidiruv</div><div class="admin-help-field-desc">Sarlavha va matn bo'yicha qidirish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Filter</div><div class="admin-help-field-desc">Rang bo'yicha filter</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Qo'shish tartibi</div>
+      <div class="admin-help-steps">
+        <div class="admin-help-step"><div class="admin-help-step-num">1</div><div class="admin-help-step-text"><b>E'lonlar</b> bo'limiga o'tib <b>"+ QO'SHISH"</b> tugmasini bosing</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">2</div><div class="admin-help-step-text">Sarlavha va matnni kiriting</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">3</div><div class="admin-help-step-text">Emoji va rang tanlash ixtiyoriy</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">4</div><div class="admin-help-step-text"><b>"SAQLASH"</b> tugmasini bosing</div></div>
+      </div>
+      <div class="admin-help-note">E'lonlar bosh sahifada scrolling banner sifatida ko'rsatiladi (faqat index.html sahifasida).</div>
+    `
+  },
+  category: {
+    title: "Kategoriyalar boshqaruvi",
+    iconBg: "#EEEDFE",
+    icon: `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><rect x="2" y="2" width="5" height="5" rx="1" fill="#534AB7"/><rect x="9" y="2" width="5" height="5" rx="1" fill="#534AB7"/><rect x="2" y="9" width="5" height="5" rx="1" fill="#534AB7"/><rect x="9" y="9" width="5" height="5" rx="1" fill="#534AB7"/></svg>`,
+    body: `
+      <div class="admin-help-section-label">Majburiy maydonlar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Nomi (name) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Kategoriya nomi (masalan: "Dasturlash", "Matematika")</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Emoji (emoji) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Kategoriya ikonkasi (masalan: 📚)</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Rang (color) <span class="admin-help-badge admin-help-badge-req">Majburiy</span></div><div class="admin-help-field-desc">Kategoriya rang kodi (hex format)</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Funksiyalar</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Qidiruv</div><div class="admin-help-field-desc">Kategoriya nomi bo'yicha qidirish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Filter</div><div class="admin-help-field-desc">Rang bo'yicha filter</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Kitoblar soni</div><div class="admin-help-field-desc">book_count (faqat ko'rish)</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Qo'shish tartibi</div>
+      <div class="admin-help-steps">
+        <div class="admin-help-step"><div class="admin-help-step-num">1</div><div class="admin-help-step-text"><b>Kategoriyalar</b> bo'limiga o'tib <b>+ QO'SHISH</b> tugmasini bosing</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">2</div><div class="admin-help-step-text">Nomi, emoji va rangni kiriting</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">3</div><div class="admin-help-step-text"><b>"SAQLASH"</b> tugmasini bosing</div></div>
+      </div>
+      <div class="admin-help-note">Kategoriya o'chirilsa, unga tegishli kitoblar kategoriyasiz qoladi.</div>
+    `
+  },
+  report: {
+    title: "Hisobotlar va statistika",
+    iconBg: "#E6F1FB",
+    icon: `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><polyline points="2,12 5,8 8,10 11,5 14,7" stroke="#185FA5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`,
+    body: `
+      <div class="admin-help-section-label">Kitoblar statistikasi</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">O'qish soni (read_count)</div><div class="admin-help-field-desc">Har bir kitob necha marta o'qilgani</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Yuklab olish soni (download_count)</div><div class="admin-help-field-desc">Har bir kitob necha marta yuklab olingan</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Reyting (rating)</div><div class="admin-help-field-desc">Foydalanuvchilar bergan baholar</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Foydalanuvchi statistikasi</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">O'qish tarixi (ReadingHistory)</div><div class="admin-help-field-desc">Qaysi foydalanuvchi qaysi kitobni o'qigan</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Saqlangan kitoblar (SavedBook)</div><div class="admin-help-field-desc">Foydalanuvchilar saqlagan kitoblar</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Baholar (BookRating)</div><div class="admin-help-field-desc">Foydalanuvchilar bergan baholar</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Eksport qilish</div>
+      <div class="admin-help-steps">
+        <div class="admin-help-step"><div class="admin-help-step-num">1</div><div class="admin-help-step-text">Kitoblar yoki Talabalar bo'limiga o'ting</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">2</div><div class="admin-help-step-text">Kerakli qatorlarni tanlang</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">3</div><div class="admin-help-step-text"><b>"Excel ga eksport"</b> yoki <b>"CSV ga eksport"</b> tugmasini bosing</div></div>
+        <div class="admin-help-step"><div class="admin-help-step-num">4</div><div class="admin-help-step-text">Fayl avtomatik yuklab olinadi</div></div>
+      </div>
+      <div class="admin-help-note">Talabalar bo'limida ham Excel va CSV eksport funksiyalari mavjud.</div>
+    `
+  },
+  settings: {
+    title: "Boshqa bo'limlar",
+    iconBg: "#E1F5EE",
+    icon: `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><circle cx="8" cy="8" r="2.5" stroke="#0F6E56" stroke-width="1.3"/><path d="M8 2v1.5M8 12.5V14M2 8h1.5M12.5 8H14M3.5 3.5l1 1M11.5 11.5l1 1M3.5 12.5l1-1M11.5 4.5l1-1" stroke="#0F6E56" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+    body: `
+      <div class="admin-help-section-label">Admin panel bo'limlari</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Kitoblar</div><div class="admin-help-field-desc">Barcha kitoblarni boshqarish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Kategoriyalar</div><div class="admin-help-field-desc">Kitob kategoriyalarini boshqarish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">E'lonlar</div><div class="admin-help-field-desc">Bildirishnomalarni boshqarish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Talabalar</div><div class="admin-help-field-desc">Foydalanuvchilarni boshqarish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">O'qish tarixi</div><div class="admin-help-field-desc">Foydalanuvchilar o'qish tarixini ko'rish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Saqlangan kitoblar</div><div class="admin-help-field-desc">Foydalanuvchilar saqlagan kitoblar</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Baholar</div><div class="admin-help-field-desc">Kitob baholarini ko'rish</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-section-label">Autentifikatsiya va Avtorizatsiya</div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Foydalanuvchilar</div><div class="admin-help-field-desc">Barcha foydalanuvchilarni boshqarish</div></div></div>
+      <div class="admin-help-field-row"><div class="admin-help-field-dot"></div><div class="admin-help-field-info"><div class="admin-help-field-name">Guruhlar</div><div class="admin-help-field-desc">Foydalanuvchi guruhlarini boshqarish (yashirilgan)</div></div></div>
+      <div class="admin-help-divider"></div>
+      <div class="admin-help-note">Admin panelga kirish uchun SuperUser hisobi kerak. Talabalar bo'limidagi "🔐 SuperUser" tugmasi orqali yangi SuperUser yaratish mumkin.</div>
+    `
+  }
+};
+
+function openModal(key) {
+  const d = data[key];
+  document.getElementById('modal-title').textContent = d.title;
+  document.getElementById('modal-icon').style.background = d.iconBg;
+  document.getElementById('modal-icon').innerHTML = d.icon;
+  document.getElementById('modal-body').innerHTML = d.body;
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById('main-content').style.filter = 'blur(3px)';
 }
-</style>
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('active');
+  document.getElementById('main-content').style.filter = '';
+}
+
+function closeOnBg(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+</script>
 {% endblock %}

@@ -11,20 +11,30 @@ def login_view(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             hemis_id = form.cleaned_data['hemis_id']
-            
-            # Custom authentication without password
+            birth_date = form.cleaned_data['birth_date']
+
+            # Custom authentication with hemis_id and birth_date
             from django.contrib.auth import authenticate
-            user = authenticate(request, hemis_id=hemis_id)
-            
+            user = authenticate(request, hemis_id=hemis_id, birth_date=birth_date)
+
             if user is not None:
                 login(request, user)
                 messages.success(request, f"Xush kelibsiz, {user.full_name}!")
                 return redirect('library:home')
             else:
-                messages.error(request, "HEMIS ID topilmadi. Iltimos, tekshirib qayta kiriting.")
+                # HEMIS ID bo'yicha user ni topish
+                from .models import Student
+                try:
+                    student = Student.objects.get(hemis_id=hemis_id)
+                    if student.birth_date is None:
+                        messages.warning(request, "⚠️ Sizning ma'lumotlaringizda tug'ilgan kuni yo'q. Iltimos, Kutubxona administratsiyasi bilan bog'lanib ma'lumotlaringizni to'ldiring.")
+                    else:
+                        messages.error(request, "HEMIS ID yoki tug'ilgan kun noto'g'ri. Iltimos, tekshirib qayta kiriting.")
+                except Student.DoesNotExist:
+                    messages.error(request, "HEMIS ID topilmadi. Iltimos, tekshirib qayta kiriting.")
     else:
         form = LoginForm()
-    
+
     return render(request, 'accounts/login.html', {'form': form})
 
 

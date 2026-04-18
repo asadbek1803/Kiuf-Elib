@@ -5,7 +5,13 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Q, Count
 from django.contrib import messages
-from .models import Book, Category, ReadingHistory, SavedBook, Announcement, Journal
+from .models import Book, Category, ReadingHistory, SavedBook, Announcement, Journal, BookRating
+
+
+@login_required
+def admin_help(request):
+    """Admin panel yordami sahifasi"""
+    return render(request, 'library/admin_help.html')
 
 
 @login_required
@@ -20,11 +26,11 @@ def home(request):
     # Kategoriyalar
     categories = Category.objects.all()[:8]
 
-    # Yangi kitoblar
-    new_books = Book.objects.filter(is_published=True).order_by('-created_at')[:6]
+    # Yangi kitoblar (sorted by average_rating)
+    new_books = Book.objects.filter(is_published=True).select_related('category').order_by('-average_rating', '-created_at')[:5]
 
-    # Mashhur kitoblar
-    popular_books = Book.objects.filter(is_published=True).order_by('-read_count')[:6]
+    # Mashhur kitoblar (sorted by average_rating)
+    popular_books = Book.objects.filter(is_published=True).select_related('category').order_by('-average_rating', '-read_count')[:5]
 
     # E'lonlar
     announcements = Announcement.objects.all()[:3]
@@ -45,38 +51,45 @@ def home(request):
 @login_required
 def books_list(request):
     """Kitoblar ro'yxati"""
-    books = Book.objects.filter(is_published=True)
-    
+    books = Book.objects.filter(is_published=True).select_related('category')
+
     # Filter
     category_id = request.GET.get('category')
     search = request.GET.get('search')
-    
+
     if category_id:
         books = books.filter(category_id=category_id)
-    
+
     if search:
         books = books.filter(
-            Q(title__icontains=search) | 
+            Q(title__icontains=search) |
             Q(author__icontains=search) |
             Q(description__icontains=search)
         )
-    
+
+    # Sort by average_rating (highest rated first)
+    books = books.order_by('-average_rating', '-created_at')
+
     # Sahifalash
     paginator = Paginator(books, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     categories = Category.objects.all()
-    
+
     # Jami kitoblar soni
     total_books = books.count()
-    
+
+    # E'lonlar
+    announcements = Announcement.objects.all()[:5]
+
     context = {
         'page_obj': page_obj,
         'categories': categories,
         'current_category': category_id,
         'search_query': search or '',
         'total_books': total_books,
+        'announcements': announcements,
     }
     return render(request, 'library/books.html', context)
 
@@ -85,24 +98,35 @@ def books_list(request):
 def book_detail(request, pk):
     """Kitob tafsilotlari"""
     book = get_object_or_404(Book, pk=pk, is_published=True)
-    
+
     # O'qish sonini oshirish
     book.read_count += 1
     book.save(update_fields=['read_count'])
-    
+
     # O'qish tarixini qo'shish
     ReadingHistory.objects.get_or_create(
         student=request.user,
-        book=book,
-        defaults={'progress': 0, 'last_page': 0}
+        book=book
     )
-    
+
     # Saqlanganligini tekshirish
     is_saved = SavedBook.objects.filter(student=request.user, book=book).exists()
-    
+
+    # Foydalanuvchi reytingini olish
+    user_rating = BookRating.objects.filter(student=request.user, book=book).first()
+
+    # Barcha reytinglarni olish
+    all_ratings = BookRating.objects.filter(book=book).select_related('student').order_by('-created_at')
+
+    # E'lonlar
+    announcements = Announcement.objects.all()[:5]
+
     context = {
         'book': book,
         'is_saved': is_saved,
+        'user_rating': user_rating,
+        'all_ratings': all_ratings,
+        'announcements': announcements,
     }
     return render(request, 'library/book_detail.html', context)
 
@@ -144,14 +168,18 @@ def unsave_book(request, pk):
 def saved_books(request):
     """Saqlangan kitoblar"""
     saved_books = SavedBook.objects.filter(student=request.user).select_related('book')
-    
+
     # Sahifalash
     paginator = Paginator(saved_books, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
+    # E'lonlar
+    announcements = Announcement.objects.all()[:5]
+
     context = {
         'page_obj': page_obj,
+        'announcements': announcements,
     }
     return render(request, 'library/saved_books.html', context)
 
@@ -160,14 +188,18 @@ def saved_books(request):
 def reading_history(request):
     """O'qish tarixi"""
     history = ReadingHistory.objects.filter(student=request.user).select_related('book')
-    
+
     # Sahifalash
     paginator = Paginator(history, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
+    # E'lonlar
+    announcements = Announcement.objects.all()[:5]
+
     context = {
         'page_obj': page_obj,
+        'announcements': announcements,
     }
     return render(request, 'library/reading_history.html', context)
 
@@ -205,26 +237,65 @@ def search(request):
 def download_book(request, pk):
     """Kitobni yuklab olish"""
     book = get_object_or_404(Book, pk=pk, is_published=True)
-    
+
     # Yuklab olish sonini oshirish
     book.download_count += 1
     book.save(update_fields=['download_count'])
-    
+
     # O'qish tarixini qo'shish
     ReadingHistory.objects.get_or_create(
         student=request.user,
-        book=book,
-        defaults={'progress': 0, 'last_page': 0}
+        book=book
     )
-    
+
     # Faylni yuklab berish
     if book.file:
+        messages.success(request, f"'{book.title}' muvaffaqiyatli yuklab olindi.")
         response = HttpResponse(book.file, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{book.title}.pdf"'
         return response
     else:
         messages.error(request, "Kitob fayli topilmadi.")
         return redirect('library:book_detail', pk=pk)
+
+
+@login_required
+def rate_book(request, pk):
+    """Kitobni baholash"""
+    if request.method == 'POST':
+        book = get_object_or_404(Book, pk=pk, is_published=True)
+        rating_value = request.POST.get('rating')
+        
+        if rating_value and rating_value.isdigit():
+            rating_value = int(rating_value)
+            if 1 <= rating_value <= 5:
+                # Tekshirish - foydalanuvchi allaqachon baholaganmi
+                existing_rating = BookRating.objects.filter(
+                    student=request.user,
+                    book=book
+                ).first()
+                
+                if existing_rating:
+                    # Mavjud reytingni yangilash
+                    existing_rating.rating = rating_value
+                    existing_rating.save()
+                    messages.success(request, f"'{book.title}' reytingi yangilandi.")
+                else:
+                    # Yangi reyting qo'shish
+                    BookRating.objects.create(
+                        student=request.user,
+                        book=book,
+                        rating=rating_value
+                    )
+                    messages.success(request, f"'{book.title}' baholandi.")
+            else:
+                messages.error(request, "Reyting 1 dan 5 gacha bo'lishi kerak.")
+        else:
+            messages.error(request, "Noto'g'ri reyting qiymati.")
+    else:
+        messages.error(request, "Faqat POST so'rovlari qabul qilinadi.")
+    
+    return redirect('library:book_detail', pk=pk)
 
 
 @login_required
@@ -269,12 +340,10 @@ def admin_help(request):
         },
         'O\'qish tarixi': {
             'icon': '📝',
-            'description': 'O\'qish tarixi bo\'limi orqali talabalarning kitob o\'qish tarixini ko\'rish mumkin. Progress va oxirgi sahifa ma\'lumotlari ko\'rsatiladi.',
+            'description': 'O\'qish tarixi bo\'limi orqali talabalarning kitob o\'qish tarixini ko\'rish mumkin.',
             'features': [
                 'Qidiruv (talaba ismi, kitob nomi)',
-                'Filter (o\'qish vaqti)',
-                'Progress ko\'rish',
-                'Oxirgi sahifa ko\'rish'
+                'Filter (o\'qish vaqti)'
             ]
         },
         'Saqlangan kitoblar': {

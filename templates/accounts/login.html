@@ -363,6 +363,35 @@
           </div>
         {% endif %}
 
+        <label class="form-label-custom" for="{{ form.birth_date.id_for_label }}">
+          Tug'ilgan kun
+          <button type="button" class="help-icon" data-bs-toggle="modal" data-bs-target="#birthDateModal" style="background: none; border: none; color: rgba(255,255,255,0.5); font-size: 16px; cursor: pointer; margin-left: 5px; padding: 0;">
+            ?
+          </button>
+        </label>
+        <div class="input-wrapper">
+          <input
+            type="date"
+            name="{{ form.birth_date.name }}"
+            id="{{ form.birth_date.id_for_label }}"
+            class="form-control-custom"
+            placeholder="DD.MM.YYYY"
+            value="{{ form.birth_date.value|default:'' }}"
+          >
+          <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        {% if form.birth_date.errors %}
+          <div class="alert alert-danger" style="background: rgba(220, 50, 50, 0.12); border: 1px solid rgba(220, 50, 50, 0.3); color: #ff7070; border-radius: 10px; padding: 10px 14px; font-size: 0.82rem; margin-bottom: 1rem;">
+            {% for error in form.birth_date.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+
         <button type="submit" class="btn-login" id="loginBtn">
           <span class="btn-text" id="btnText">
             <span>Kutubxonaga kirish</span>
@@ -414,5 +443,37 @@
     this.value = this.value.toUpperCase();
   });
 </script>
+
+<!-- Birth Date Modal -->
+<div class="modal fade" id="birthDateModal" tabindex="-1" aria-labelledby="birthDateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background: #1e2837; border: 1px solid #334155; color: #e2e8f0;">
+      <div class="modal-header" style="border-bottom: 1px solid #334155;">
+        <h5 class="modal-title" id="birthDateModalLabel" style="color: #e2e8f0;">Tug'ilgan kun formati</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color: #cbd5e1; margin-bottom: 16px;">
+          Tug'ilgan kunni quyidagi formatda kiriting:
+        </p>
+        <div style="background: #0f172a; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+          <ul style="margin: 0; padding-left: 20px; color: #cbd5e1;">
+            <li style="margin-bottom: 8px;"><strong style="color: #e2e8f0;">Kun:</strong> 1-31 orasidagi raqam (masalan: 15)</li>
+            <li style="margin-bottom: 8px;"><strong style="color: #e2e8f0;">Oy:</strong> 1-12 orasidagi raqam (masalan: 06)</li>
+            <li style="margin-bottom: 8px;"><strong style="color: #e2e8f0;">Yil:</strong> 4 xonali raqam (masalan: 2000)</li>
+          </ul>
+        </div>
+        <div style="background: #1e3a5f; padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+          <p style="margin: 0; color: #93c5fd; font-size: 14px;">
+            <strong>Misol:</strong> 15.06.2000 (2000-yil 15-iyun)
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid #334155;">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #334155; border: none; color: #e2e8f0;">Yopish</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

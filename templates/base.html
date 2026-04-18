@@ -20,6 +20,16 @@
             --info-color: #17a2b8;
             --light-color: #f8f9fa;
             --dark-color: #343a40;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --color-text-primary: #1e293b;
+            --color-text-secondary: #64748b;
+            --color-text-tertiary: #94a3b8;
+            --color-background-primary: #ffffff;
+            --color-background-secondary: #f8fafc;
+            --color-border-tertiary: #e2e8f0;
+            --color-border-secondary: #cbd5e1;
+            --border-radius-lg: 12px;
+            --border-radius-md: 8px;
         }
         
         body {
@@ -218,6 +228,345 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* Admin Help Styles */
+        .admin-help-body {
+            font-family: var(--font-sans);
+            background: #f5f5f5;
+        }
+
+        .admin-help-wrap {
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-help-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-help-hero h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .admin-help-hero p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .admin-help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-help-card {
+            background: var(--color-background-primary);
+            border: 1px solid var(--color-border-tertiary);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+            text-align: left;
+        }
+
+        .admin-help-card:hover {
+            border-color: var(--color-border-secondary);
+            background: var(--color-background-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .admin-help-card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .admin-help-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .admin-help-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .admin-help-card h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .admin-help-card p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .admin-help-hint {
+            font-size: 12px;
+            color: #378ADD;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        .admin-help-hint svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .admin-help-info {
+            background: #e8f4fd;
+            border: 1px solid #bfdbfe;
+            border-left: 4px solid #378ADD;
+            border-radius: var(--border-radius-md);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-help-info p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+        }
+
+        .admin-help-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .admin-help-overlay.active {
+            display: flex;
+        }
+
+        .admin-help-modal {
+            background: var(--color-background-primary);
+            border: 1px solid var(--color-border-secondary);
+            border-radius: var(--border-radius-lg);
+            width: 95%;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .admin-help-modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--color-border-tertiary);
+            position: sticky;
+            top: 0;
+            background: var(--color-background-primary);
+            z-index: 10;
+        }
+
+        .admin-help-modal-head-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-help-modal-head h2 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .admin-help-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--color-border-secondary);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-secondary);
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .admin-help-close-btn:hover {
+            background: var(--color-background-secondary);
+            color: var(--color-text-primary);
+        }
+
+        .admin-help-modal-body {
+            padding: 1.5rem;
+        }
+
+        .admin-help-section-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .admin-help-section-label:first-child {
+            margin-top: 0;
+        }
+
+        .admin-help-field-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .admin-help-field-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #378ADD;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .admin-help-field-info {
+            flex: 1;
+        }
+
+        .admin-help-field-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 3px;
+        }
+
+        .admin-help-field-desc {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .admin-help-badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: var(--border-radius-md);
+            margin-left: 8px;
+            vertical-align: middle;
+            font-weight: 500;
+        }
+
+        .admin-help-badge-req {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        .admin-help-badge-opt {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #86efac;
+        }
+
+        .admin-help-badge-file {
+            background: #dbeafe;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+
+        .admin-help-steps {
+            margin-top: 8px;
+        }
+
+        .admin-help-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+
+        .admin-help-step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--color-background-secondary);
+            border: 1px solid var(--color-border-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .admin-help-step-text {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+        }
+
+        .admin-help-step-text b {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .admin-help-divider {
+            border: none;
+            border-top: 1px solid var(--color-border-tertiary);
+            margin: 16px 0;
+        }
+
+        .admin-help-note {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            border-radius: var(--border-radius-md);
+            padding: 1rem 1.25rem;
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
         }
     </style>
     
