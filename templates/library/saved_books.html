@@ -30,6 +30,23 @@
   --r-lg: 20px;
 }
 
+[data-theme="dark"] {
+  --navy: #1e293b;
+  --navy-mid: #334155;
+  --blue: #3b82f6;
+  --blue-light: #60a5fa;
+  --blue-glow: rgba(59, 130, 246, 0.18);
+  --gold: #fbbf24;
+  --gold-light: #fcd34d;
+  --surface: rgba(0, 0, 0, 0.2);
+  --surface-2: rgba(0, 0, 0, 0.3);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-2: rgba(255, 255, 255, 0.15);
+  --text: #f1f5f9;
+  --text-muted: rgba(241, 245, 249, 0.6);
+  --text-dim: rgba(241, 245, 249, 0.4);
+}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 
@@ -90,6 +107,20 @@ nav.topbar {
 
 .nav-links {
   display: flex; align-items: center; gap: 0.2rem; margin-left: auto;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--surface);
 }
 .nav-link {
   display: flex; align-items: center; gap: 6px;
@@ -333,6 +364,11 @@ nav.topbar {
     </a>
 
     <div class="nav-links">
+      <button class="theme-toggle nav-link" id="themeToggle" title="Rejimni o'zgartirish">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" id="themeIcon">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
       <a class="nav-link" href="{% url 'library:home' %}">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
         Bosh sahifa
@@ -696,6 +732,39 @@ nav.topbar {
         showToast({{ message|escapejs }}, '{{ message.tags }}');
       {% endfor %}
     {% endif %}
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to light mode
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+
+    // Toggle theme on button click
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      });
+    }
+
+    // Update icon based on theme
+    function updateThemeIcon(theme) {
+      if (themeIcon) {
+        if (theme === 'dark') {
+          themeIcon.innerHTML = '<circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+        } else {
+          themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+        }
+      }
+    }
   </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -133,7 +133,19 @@ AUTHENTICATION_BACKENDS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://itopik.uz',
     'https://www.itopik.uz',
+    'http://itopik.uz',
+    'http://www.itopik.uz',
+    'http://localhost',
+    'http://127.0.0.1',
+    'https://localhost',
+    'https://127.0.0.1',
 ]
+
+# Disable CSRF cookie security for development (allow HTTP)
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 
 # Static files (CSS, JavaScript, Images)
