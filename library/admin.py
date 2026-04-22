@@ -5,6 +5,16 @@ import xlsxwriter
 from io import BytesIO
 from unfold.admin import ModelAdmin
 from .models import Book, Category, ReadingHistory, SavedBook, Announcement, Journal
+from django import forms
+
+
+class ColorPickerWidget(forms.TextInput):
+    """Color picker widget for color fields"""
+    def __init__(self, attrs=None):
+        default_attrs = {'type': 'color'}
+        if attrs:
+            default_attrs.update(attrs)
+        super().__init__(attrs=default_attrs)
 
 
 @admin.register(Category)
@@ -13,6 +23,12 @@ class CategoryAdmin(ModelAdmin):
     list_filter = ['color']
     search_fields = ['name']
     ordering = ['name']
+    readonly_fields = ['slug']
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'color':
+            kwargs['widget'] = ColorPickerWidget
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
 
 
@@ -25,6 +41,11 @@ class BookAdmin(ModelAdmin):
     list_editable = ['is_published']
     ordering = ['-created_at']
     readonly_fields = ['read_count', 'download_count']
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'cover_color':
+            kwargs['widget'] = ColorPickerWidget
+        return super().formfield_for_dbfield(db_field, **kwargs)
     
     fieldsets = (
         ('Asosiy ma\'lumotlar', {
@@ -127,6 +148,11 @@ class AnnouncementAdmin(ModelAdmin):
     ordering = ['-date']
     readonly_fields = ['date']
 
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'color':
+            kwargs['widget'] = ColorPickerWidget
+        return super().formfield_for_dbfield(db_field, **kwargs)
+
 
 @admin.register(Journal)
 class JournalAdmin(ModelAdmin):
@@ -135,6 +161,11 @@ class JournalAdmin(ModelAdmin):
     search_fields = ['name']
     ordering = ['-year', 'name']
     list_editable = ['issues_count']
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'cover_color':
+            kwargs['widget'] = ColorPickerWidget
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
 
 

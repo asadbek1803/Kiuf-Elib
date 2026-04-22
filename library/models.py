@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.db.models import Avg
+from django.utils.text import slugify
 
 User = get_user_model()
 
@@ -10,7 +11,7 @@ class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nomi")
     emoji = models.CharField(max_length=10, blank=True, verbose_name="Emoji")
     color = models.CharField(max_length=7, default="#007bff", verbose_name="Rang")
-    slug = models.SlugField(unique=True, verbose_name="Slug")
+    slug = models.SlugField(unique=True, verbose_name="Slug", blank=True)
 
     class Meta:
         verbose_name = "Kategoriya"
@@ -19,6 +20,11 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     @property
     def book_count(self):
