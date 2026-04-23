@@ -234,13 +234,13 @@ def search(request):
 
 
 @login_required
-def download_book(request, pk):
-    """Kitobni yuklab olish"""
+def read_book(request, pk):
+    """Kitobni o'qish (server-side PDF rendering)"""
     book = get_object_or_404(Book, pk=pk, is_published=True)
 
-    # Yuklab olish sonini oshirish
-    book.download_count += 1
-    book.save(update_fields=['download_count'])
+    # O'qish sonini oshirish
+    book.read_count += 1
+    book.save(update_fields=['read_count'])
 
     # O'qish tarixini qo'shish
     ReadingHistory.objects.get_or_create(
@@ -248,15 +248,15 @@ def download_book(request, pk):
         book=book
     )
 
-    # Faylni yuklab berish
-    if book.file:
-        messages.success(request, f"'{book.title}' muvaffaqiyatli yuklab olindi.")
-        response = HttpResponse(book.file, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{book.title}.pdf"'
-        return response
-    else:
+    if not book.file:
         messages.error(request, "Kitob fayli topilmadi.")
         return redirect('library:book_detail', pk=pk)
+
+    context = {
+        'book': book,
+        'pdf_url': book.file.url,
+    }
+    return render(request, 'library/read_book.html', context)
 
 
 @login_required

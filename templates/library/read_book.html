@@ -1,0 +1,767 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ book.title }} - O'qish | KIUF Elektron Kutubxona</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root {
+  --navy: #0b1d3a;
+  --blue: #1a5fbd;
+  --blue-light: #2d7de8;
+  --surface: rgba(255,255,255,0.04);
+  --surface-2: rgba(255,255,255,0.07);
+  --surface-3: rgba(255,255,255,0.11);
+  --border: rgba(255,255,255,0.08);
+  --border-2: rgba(255,255,255,0.14);
+  --text: #f0f4ff;
+  --text-muted: rgba(240,244,255,0.5);
+  --font-body: 'Sora', sans-serif;
+  --toolbar-h: 64px;
+  --subbar-h: 54px;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; font-family: var(--font-body); background: var(--navy); color: var(--text); }
+
+/* BG */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(26,95,189,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(13,45,110,0.3) 0%, transparent 60%),
+    linear-gradient(180deg, #0a1628 0%, #0d2050 50%, #0a1628 100%);
+}
+
+/* NAVBAR */
+nav.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: var(--toolbar-h);
+  background: rgba(10,22,40,0.92); backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+}
+.nav-inner { width: 100%; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; }
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
+.nav-logo-icon {
+  width: 36px; height: 36px; border-radius: 9px; overflow: hidden;
+  background: linear-gradient(135deg, #1a5fbd, #0a3d8c);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.nav-logo-icon img { width: 32px; height: 32px; object-fit: contain; }
+.nav-logo-title { font-size: 0.82rem; font-weight: 700; }
+.nav-logo-sub { font-size: 0.62rem; color: var(--text-muted); margin-top: 1px; }
+.book-title-nav {
+  flex: 1; text-align: center; font-size: 0.88rem; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 1rem;
+}
+.nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #1a5fbd, #0a3d8c);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; border: 1px solid var(--border-2);
+}
+.nav-back {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 500;
+  color: var(--text-muted); text-decoration: none; border: none; background: none; cursor: pointer;
+  transition: all 0.18s;
+}
+.nav-back:hover { background: var(--surface-2); color: var(--text); }
+
+/* TOOLBAR */
+.toolbar {
+  position: fixed; top: var(--toolbar-h); left: 0; right: 0; z-index: 190;
+  height: var(--subbar-h);
+  background: rgba(11,25,50,0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.25rem; gap: 0.75rem;
+  user-select: none;
+}
+.tg { display: flex; align-items: center; gap: 5px; }
+.tb-div { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+.tb-lbl { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+
+.tb-btn {
+  width: 32px; height: 32px; border-radius: 7px; flex-shrink: 0;
+  border: 1px solid var(--border); background: var(--surface-2);
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; font-size: 12px; font-weight: 700;
+}
+.tb-btn:hover { background: var(--surface-3); color: var(--text); border-color: var(--border-2); }
+.tb-btn.on  { background: var(--blue); color: #fff; border-color: var(--blue-light); }
+.tb-btn.red { background: rgba(220,60,60,0.14); color: #f87171; border-color: rgba(220,60,60,0.22); }
+.tb-btn.red:hover { background: rgba(220,60,60,0.26); }
+
+.page-nav {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 3px 10px; height: 32px;
+}
+.page-nav input {
+  width: 36px; background: none; border: none; outline: none;
+  color: var(--text); font-family: var(--font-body); font-size: 0.78rem;
+  font-weight: 700; text-align: center;
+}
+.page-nav span { font-size: 0.72rem; color: var(--text-muted); }
+.zoom-lbl { min-width: 46px; text-align: center; font-size: 0.76rem; font-weight: 700; color: var(--text); }
+
+.cdot {
+  width: 17px; height: 17px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.14s; flex-shrink: 0;
+}
+.cdot.on { border-color: #fff; transform: scale(1.18); }
+
+/* READER STAGE */
+.stage {
+  position: fixed;
+  top: calc(var(--toolbar-h) + var(--subbar-h));
+  left: 0; right: 0; bottom: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  background: #141e30; overflow: hidden;
+}
+
+.flipper {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+}
+
+/* THE PAGE */
+.page-wrap {
+  position: relative; border-radius: 3px; overflow: hidden;
+  box-shadow: 0 12px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  max-width: calc(100vw - 120px);
+  max-height: calc(100vh - var(--toolbar-h) - var(--subbar-h) - 32px);
+}
+.page-wrap canvas { display: block; max-width: 100%; }
+
+/* flip animation classes */
+.going-prev .page-wrap { animation: flipOutRight 0.18s ease forwards; }
+.going-next .page-wrap { animation: flipOutLeft  0.18s ease forwards; }
+@keyframes flipOutLeft  { to { opacity:0; transform: scale(0.95) translateX(-28px); } }
+@keyframes flipOutRight { to { opacity:0; transform: scale(0.95) translateX(28px);  } }
+.flip-enter-left  { opacity:0; transform: scale(0.95) translateX(28px);  }
+.flip-enter-right { opacity:0; transform: scale(0.95) translateX(-28px); }
+.flip-active { transition: opacity 0.2s ease, transform 0.2s ease !important; opacity:1 !important; transform: none !important; }
+
+/* annotation canvas */
+.annot-canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+.page-wrap.can-draw  .annot-canvas { pointer-events: all; cursor: crosshair; }
+.page-wrap.can-erase .annot-canvas { pointer-events: all; cursor: cell; }
+
+/* page badge */
+.pg-badge {
+  position: absolute; bottom: 10px; right: 14px;
+  font-size: 0.62rem; font-weight: 600; color: rgba(255,255,255,0.25);
+  pointer-events: none; z-index: 5;
+}
+
+/* SIDE ARROW BUTTONS */
+.side-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 42px; height: 76px; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; z-index: 20;
+}
+.side-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); border-color: var(--border-2); }
+.side-btn:disabled { opacity: 0.2; cursor: default; pointer-events: none; }
+.side-btn.left  { left: 14px; }
+.side-btn.right { right: 14px; }
+
+/* LOADING */
+.loading-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(10,22,40,0.96);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;
+}
+.spin {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 3px solid var(--border); border-top-color: var(--blue);
+  animation: spin 0.85s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 0.82rem; color: var(--text-muted); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(14px);
+  background: rgba(26,95,189,0.92); color: #fff; backdrop-filter: blur(10px);
+  padding: 8px 18px; border-radius: 100px; font-size: 0.76rem; font-weight: 500;
+  z-index: 900; opacity: 0; transition: all 0.25s; pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* KBD HINT */
+.kbd-hint {
+  position: fixed; bottom: 1.4rem; right: 1.4rem; z-index: 100;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 9px 13px;
+  font-size: 0.68rem; color: var(--text-muted); line-height: 1.75; pointer-events: none;
+}
+.kbd-hint kbd {
+  display: inline-block; background: var(--surface-3); border: 1px solid var(--border-2);
+  border-radius: 4px; padding: 1px 5px; font-size: 0.66rem; color: var(--text); font-family: inherit;
+}
+
+@media (max-width: 768px) {
+  .tb-lbl, .kbd-hint { display: none; }
+  .toolbar { padding: 0 0.6rem; gap: 0.4rem; }
+  .side-btn { width: 32px; height: 56px; }
+}
+</style>
+</head>
+<body>
+<div class="bg-layer"></div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOvl">
+  <div class="spin"></div>
+  <div class="loading-text">Kitob yuklanmoqda…</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toastEl"></div>
+
+<!-- NAVBAR -->
+<nav class="topbar">
+  <div class="nav-inner">
+    <a href="{% url 'library:home' %}" class="nav-logo">
+      <div class="nav-logo-icon"><img src="{% static 'css/logo.png' %}" alt="KIUF"></div>
+      <div>
+        <div class="nav-logo-title">Elektron Kutubxona</div>
+        <div class="nav-logo-sub">Korea International University — Farg'ona</div>
+      </div>
+    </a>
+    <div class="book-title-nav">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="margin-right:6px;opacity:.4"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2"/></svg>
+      {{ book.title }}
+    </div>
+    <div class="nav-right">
+      <a href="{% url 'library:book_detail' book.pk %}" class="nav-back">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Orqaga
+      </a>
+      {% if user.is_authenticated %}
+      <div class="nav-avatar">{{ user.full_name|slice:":2" }}</div>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="tg">
+    <button class="tb-btn" id="btnPrev" title="Oldingi (← A)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </button>
+    <div class="page-nav">
+      <input type="number" id="pageInput" min="1" value="1">
+      <span>/ <span id="totalLbl">—</span></span>
+    </div>
+    <button class="tb-btn" id="btnNext" title="Keyingi (→ D)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div class="tb-div"></div>
+
+  <div class="tg">
+    <button class="tb-btn" id="btnZoomOut" title="Kichraytirish (-)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-2-2M8 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="zoom-lbl" id="zoomLbl">100%</div>
+    <button class="tb-btn" id="btnZoomIn" title="Kattalashtirish (+)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-2-2M11 8v6M8 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="tb-btn" id="btnFit" title="Ekranga moslash (F)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div class="tb-div"></div>
+
+  <div class="tg">
+    <span class="tb-lbl">Qalamcha:</span>
+    <button class="tb-btn" id="btnPen" data-tool="pen" title="Qalamcha (P)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="tb-btn" id="btnHL" data-tool="highlight" title="Belgilash (H)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="13" y="2" width="9" height="5" rx="1" fill="currentColor" opacity=".45"/></svg>
+    </button>
+    <button class="tb-btn" id="btnEraser" data-tool="eraser" title="O'chirgich (E)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 20H7L3 16l10.586-10.586a2 2 0 0 1 2.828 0L20 9a2 2 0 0 1 0 2.828L10.172 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="tb-btn red" id="btnClear" title="Bu sahifa belgilarini tozalash">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div class="tb-div"></div>
+
+  <div class="tg">
+    <div id="colorPicker" style="display:flex;align-items:center;gap:5px;">
+      <div class="cdot on" data-c="#f87171" style="background:#f87171"></div>
+      <div class="cdot"    data-c="#60a5fa" style="background:#60a5fa"></div>
+      <div class="cdot"    data-c="#34d399" style="background:#34d399"></div>
+      <div class="cdot"    data-c="#fbbf24" style="background:#fbbf24"></div>
+      <div class="cdot"    data-c="#e879f9" style="background:#e879f9"></div>
+      <div class="cdot"    data-c="#f9fafb" style="background:#f9fafb"></div>
+    </div>
+    <div class="tb-div"></div>
+    <button class="tb-btn" id="btnSzDn">S</button>
+    <button class="tb-btn" id="btnSzUp">L</button>
+  </div>
+</div>
+
+<!-- STAGE -->
+<div class="stage" id="stage">
+  <button class="side-btn left" id="sideLeft" disabled>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+  </button>
+  <div class="flipper" id="flipper"></div>
+  <button class="side-btn right" id="sideRight" disabled>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+  </button>
+</div>
+
+<!-- KBD HINT -->
+<div class="kbd-hint">
+  <kbd>←</kbd><kbd>A</kbd> Oldingi &nbsp; <kbd>→</kbd><kbd>D</kbd> Keyingi<br>
+  <kbd>+</kbd> Kattalashtir &nbsp; <kbd>-</kbd> Kichrait &nbsp; <kbd>F</kbd> Fit<br>
+  <kbd>P</kbd> Qalamcha &nbsp; <kbd>H</kbd> Belgi &nbsp; <kbd>E</kbd> O'chir
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// PDF.js setup
+// ══════════════════════════════════════════════
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// Security
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('dragstart',   e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['s','p','u'].includes(e.key.toLowerCase())) {
+    e.preventDefault(); showToast('Yuklab olish mumkin emas');
+  }
+});
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+const PDF_URL  = '{{ pdf_url }}';
+const ANNOTS   = {};        // pageNum → [{tool,color,size,pts:[]}]
+
+let pdfDoc     = null;
+let totalPages = 0;
+let curPage    = 1;
+let scale      = 1.3;
+let fitScale   = 1.3;
+let rendering  = false;     // prevent concurrent renders
+
+let activeTool = null;
+let drawColor  = '#f87171';
+let drawSize   = 3;
+let isDrawing  = false;
+let lastX = 0, lastY = 0;
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ══════════════════════════════════════════════
+// LOAD
+// ══════════════════════════════════════════════
+async function loadPDF() {
+  try {
+    pdfDoc = await pdfjsLib.getDocument({ url: PDF_URL, withCredentials: true }).promise;
+    totalPages = pdfDoc.numPages;
+    document.getElementById('totalLbl').textContent = totalPages;
+    document.getElementById('pageInput').max = totalPages;
+
+    // Compute fit scale from first page
+    const pg0   = await pdfDoc.getPage(1);
+    const vp0   = pg0.getViewport({ scale: 1 });
+    const stage = document.getElementById('stage');
+    const maxW  = stage.clientWidth  - 120;
+    const maxH  = stage.clientHeight - 32;
+    fitScale    = Math.min(maxW / vp0.width, maxH / vp0.height, 2.2);
+    scale       = fitScale;
+    updateZoomLabel();
+
+    await showPage(1, null);
+    document.getElementById('loadingOvl').style.display = 'none';
+    updateSideBtns();
+  } catch(err) {
+    console.error(err);
+    document.getElementById('loadingOvl').innerHTML =
+      `<div style="color:#f87171;font-size:.85rem">Kitob yuklanmadi. Sahifani yangilang.</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════
+// RENDER ONE PAGE  (direction: 'prev'|'next'|null)
+// ══════════════════════════════════════════════
+async function showPage(num, direction) {
+  if (rendering) return;
+  rendering = true;
+
+  const flipper = document.getElementById('flipper');
+  const oldWrap = flipper.querySelector('.page-wrap');
+
+  // Step 1: animate old page out
+  if (oldWrap && direction) {
+    flipper.classList.add(direction === 'next' ? 'going-next' : 'going-prev');
+    await delay(190);
+    flipper.classList.remove('going-next', 'going-prev');
+  }
+
+  // Step 2: update state + toolbar
+  curPage = num;
+  document.getElementById('pageInput').value = num;
+  updateSideBtns();
+
+  // Step 3: build new page element
+  const newWrap = await buildPageEl(num);
+
+  // Step 4: set enter position
+  if (direction) {
+    newWrap.classList.add(direction === 'next' ? 'flip-enter-left' : 'flip-enter-right');
+  }
+
+  // Step 5: swap DOM
+  if (oldWrap) oldWrap.remove();
+  flipper.appendChild(newWrap);
+
+  // Step 6: trigger enter animation
+  if (direction) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        newWrap.classList.add('flip-active');
+        setTimeout(() => {
+          newWrap.classList.remove('flip-enter-left', 'flip-enter-right', 'flip-active');
+        }, 220);
+      });
+    });
+  }
+
+  updateDrawCursor(newWrap);
+  rendering = false;
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ══════════════════════════════════════════════
+// BUILD PAGE ELEMENT
+// ══════════════════════════════════════════════
+async function buildPageEl(num) {
+  const page     = await pdfDoc.getPage(num);
+  const viewport = page.getViewport({ scale });
+  const W = Math.floor(viewport.width);
+  const H = Math.floor(viewport.height);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'page-wrap';
+  wrap.style.width  = W + 'px';
+  wrap.style.height = H + 'px';
+
+  // PDF canvas
+  const cvs = document.createElement('canvas');
+  cvs.width = W; cvs.height = H;
+  cvs.style.display = 'block';
+  wrap.appendChild(cvs);
+
+  // Annotation canvas
+  const acvs = document.createElement('canvas');
+  acvs.className = 'annot-canvas';
+  acvs.width = W; acvs.height = H;
+  acvs.style.width  = W + 'px';
+  acvs.style.height = H + 'px';
+  wrap.appendChild(acvs);
+
+  // Badge
+  const badge = document.createElement('div');
+  badge.className  = 'pg-badge';
+  badge.textContent = `${num} / ${totalPages}`;
+  wrap.appendChild(badge);
+
+  // Render PDF
+  await page.render({ canvasContext: cvs.getContext('2d'), viewport }).promise;
+
+  // Restore annotations
+  restoreAnnots(acvs, num);
+
+  // Attach draw
+  attachDraw(acvs, num);
+
+  return wrap;
+}
+
+// ══════════════════════════════════════════════
+// ANNOTATIONS
+// ══════════════════════════════════════════════
+function attachDraw(canvas, pageNum) {
+  canvas.addEventListener('pointerdown', e => {
+    if (!activeTool) return;
+    e.preventDefault();
+    isDrawing = true;
+    canvas.setPointerCapture(e.pointerId);
+    const [x, y] = getPos(e, canvas);
+    lastX = x; lastY = y;
+    if (!ANNOTS[pageNum]) ANNOTS[pageNum] = [];
+    ANNOTS[pageNum].push({ tool: activeTool, color: drawColor, size: drawSize, pts: [[x, y]] });
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    if (!isDrawing || !activeTool) return;
+    e.preventDefault();
+    const [x, y] = getPos(e, canvas);
+    const strokes = ANNOTS[pageNum];
+    if (!strokes?.length) return;
+    const cur = strokes[strokes.length - 1];
+    cur.pts.push([x, y]);
+    paintSeg(canvas.getContext('2d'), cur, lastX, lastY, x, y);
+    lastX = x; lastY = y;
+  });
+
+  canvas.addEventListener('pointerup',    () => { isDrawing = false; });
+  canvas.addEventListener('pointercancel',() => { isDrawing = false; });
+}
+
+function getPos(e, canvas) {
+  const r  = canvas.getBoundingClientRect();
+  const sx = canvas.width  / r.width;
+  const sy = canvas.height / r.height;
+  return [(e.clientX - r.left) * sx, (e.clientY - r.top) * sy];
+}
+
+function paintSeg(ctx, stroke, x1, y1, x2, y2) {
+  ctx.save();
+  if (stroke.tool === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+    ctx.lineWidth   = stroke.size * 9;
+  } else if (stroke.tool === 'highlight') {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle  = stroke.color + '50';
+    ctx.lineWidth    = stroke.size * 12;
+  } else {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle  = stroke.color;
+    ctx.lineWidth    = stroke.size;
+  }
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.restore();
+}
+
+function restoreAnnots(canvas, pageNum) {
+  if (!ANNOTS[pageNum]) return;
+  const ctx = canvas.getContext('2d');
+  for (const stroke of ANNOTS[pageNum]) {
+    for (let i = 1; i < stroke.pts.length; i++) {
+      paintSeg(ctx, stroke,
+        stroke.pts[i-1][0], stroke.pts[i-1][1],
+        stroke.pts[i][0],   stroke.pts[i][1]);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+// TOOL
+// ══════════════════════════════════════════════
+function setTool(tool) {
+  activeTool = (activeTool === tool) ? null : tool;
+  document.querySelectorAll('[data-tool]').forEach(b =>
+    b.classList.toggle('on', b.dataset.tool === activeTool));
+  const wrap = document.querySelector('.page-wrap');
+  if (wrap) updateDrawCursor(wrap);
+  if (!activeTool) showToast('Asbob o\'chirildi');
+  else showToast(activeTool === 'pen' ? 'Qalamcha yoqildi' : activeTool === 'highlight' ? 'Belgilash yoqildi' : 'O\'chirgich yoqildi');
+}
+
+function updateDrawCursor(wrap) {
+  wrap.classList.toggle('can-draw',   activeTool === 'pen' || activeTool === 'highlight');
+  wrap.classList.toggle('can-erase',  activeTool === 'eraser');
+  const ac = wrap.querySelector('.annot-canvas');
+  if (ac) ac.style.pointerEvents = activeTool ? 'all' : 'none';
+}
+
+// ══════════════════════════════════════════════
+// ZOOM  — re-renders current page only
+// ══════════════════════════════════════════════
+const ZOOM_STEPS = [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.75, 2.0, 2.5, 3.0];
+
+function updateZoomLabel() {
+  document.getElementById('zoomLbl').textContent = Math.round(scale * 100) + '%';
+}
+
+async function applyZoom(newScale) {
+  scale = Math.max(0.35, Math.min(3.5, newScale));
+  updateZoomLabel();
+  await showPage(curPage, null);   // no flip animation on zoom
+}
+
+function zoomIn()  {
+  const n = ZOOM_STEPS.find(s => s > scale + 0.005);
+  applyZoom(n ?? 3.5);
+}
+function zoomOut() {
+  const n = [...ZOOM_STEPS].reverse().find(s => s < scale - 0.005);
+  applyZoom(n ?? 0.35);
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function goPrev() { if (curPage > 1          && !rendering) showPage(curPage - 1, 'prev'); }
+function goNext() { if (curPage < totalPages && !rendering) showPage(curPage + 1, 'next'); }
+
+function updateSideBtns() {
+  document.getElementById('sideLeft').disabled  = curPage <= 1;
+  document.getElementById('sideRight').disabled = curPage >= totalPages;
+  document.getElementById('btnPrev').disabled   = curPage <= 1;
+  document.getElementById('btnNext').disabled   = curPage >= totalPages;
+}
+
+// ══════════════════════════════════════════════
+// BUTTON WIRING
+// ══════════════════════════════════════════════
+document.getElementById('btnPrev').addEventListener('click',    goPrev);
+document.getElementById('btnNext').addEventListener('click',    goNext);
+document.getElementById('sideLeft').addEventListener('click',   goPrev);
+document.getElementById('sideRight').addEventListener('click',  goNext);
+
+document.getElementById('pageInput').addEventListener('change', function() {
+  const n = Math.max(1, Math.min(totalPages, parseInt(this.value) || 1));
+  this.value = n;
+  if (n !== curPage) showPage(n, n > curPage ? 'next' : 'prev');
+});
+
+document.getElementById('btnZoomIn').addEventListener('click',  zoomIn);
+document.getElementById('btnZoomOut').addEventListener('click', zoomOut);
+document.getElementById('btnFit').addEventListener('click', () => {
+  const stage = document.getElementById('stage');
+  const maxW  = stage.clientWidth  - 120;
+  const maxH  = stage.clientHeight - 32;
+  if (pdfDoc) {
+    pdfDoc.getPage(1).then(pg => {
+      const vp = pg.getViewport({ scale: 1 });
+      fitScale = Math.min(maxW / vp.width, maxH / vp.height, 2.2);
+      applyZoom(fitScale);
+    });
+  }
+});
+
+document.getElementById('btnPen').addEventListener('click',    () => setTool('pen'));
+document.getElementById('btnHL').addEventListener('click',     () => setTool('highlight'));
+document.getElementById('btnEraser').addEventListener('click', () => setTool('eraser'));
+
+document.getElementById('btnClear').addEventListener('click', () => {
+  if (!confirm('Bu sahifadagi barcha belgilarni o\'chirasizmi?')) return;
+  delete ANNOTS[curPage];
+  const ac = document.querySelector('.annot-canvas');
+  if (ac) ac.getContext('2d').clearRect(0, 0, ac.width, ac.height);
+  showToast('Belgilar tozalandi');
+});
+
+document.getElementById('btnSzDn').addEventListener('click', () => {
+  drawSize = Math.max(1, drawSize - 1); showToast('Hajm: ' + drawSize);
+});
+document.getElementById('btnSzUp').addEventListener('click', () => {
+  drawSize = Math.min(16, drawSize + 1); showToast('Hajm: ' + drawSize);
+});
+
+document.querySelectorAll('.cdot').forEach(d => {
+  d.addEventListener('click', () => {
+    document.querySelectorAll('.cdot').forEach(x => x.classList.remove('on'));
+    d.classList.add('on');
+    drawColor = d.dataset.c;
+    showToast('Rang o\'zgartirildi');
+  });
+});
+
+// ══════════════════════════════════════════════
+// KEYBOARD
+// ══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.ctrlKey || e.metaKey)       return;
+  switch(e.key) {
+    case 'ArrowLeft':  case 'a': case 'A': goPrev(); break;
+    case 'ArrowRight': case 'd': case 'D': goNext(); break;
+    case 'ArrowUp':    case 'w': case 'W': goPrev(); break;
+    case 'ArrowDown':  case 's': case 'S': goNext(); break;
+    case '+': case '=': zoomIn();  break;
+    case '-':           zoomOut(); break;
+    case 'f': case 'F': document.getElementById('btnFit').click(); break;
+    case 'p': case 'P': setTool('pen');      break;
+    case 'h': case 'H': setTool('highlight'); break;
+    case 'e': case 'E': setTool('eraser');   break;
+    case 'Escape':
+      activeTool = null;
+      document.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('on'));
+      const w = document.querySelector('.page-wrap');
+      if (w) updateDrawCursor(w);
+      break;
+  }
+});
+
+// ══════════════════════════════════════════════
+// SWIPE + PINCH (mobile)
+// ══════════════════════════════════════════════
+let touchStartX = null, pinchDist = null;
+
+document.getElementById('stage').addEventListener('touchstart', e => {
+  if (e.touches.length === 1) { touchStartX = e.touches[0].clientX; pinchDist = null; }
+  if (e.touches.length === 2) {
+    touchStartX = null;
+    pinchDist   = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY);
+  }
+}, { passive: true });
+
+document.getElementById('stage').addEventListener('touchmove', e => {
+  if (e.touches.length === 2 && pinchDist !== null) {
+    const d = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY);
+    const delta = d - pinchDist;
+    if (Math.abs(delta) > 16) { applyZoom(scale + (delta > 0 ? 0.12 : -0.12)); pinchDist = d; }
+  }
+}, { passive: true });
+
+document.getElementById('stage').addEventListener('touchend', e => {
+  if (touchStartX !== null && e.changedTouches.length === 1) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 55) { dx < 0 ? goNext() : goPrev(); }
+    touchStartX = null;
+  }
+}, { passive: true });
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+loadPDF();
+</script>
+</body>
+</html>
