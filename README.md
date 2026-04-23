@@ -188,4 +188,4 @@ Book.objects.create(
 
 ## Litsenziya
 
-© 2024 KIUF E-Lib. Barcha huquqlar himoyalangan.
+© 2026 KIUF E-Lib. Barcha huquqlar himoyalangan.
