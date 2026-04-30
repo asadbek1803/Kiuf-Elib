@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="uz">
 <head>
@@ -297,11 +298,8 @@
 
     <div class="logo-area">
       <div class="logo-ring">
-        <!-- KIUF shield SVG logo -->
-        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M22 4 L38 10 L38 22 C38 31 30 38 22 41 C14 38 6 31 6 22 L6 10 Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
-          <text x="22" y="26" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="white">KIUF</text>
-        </svg>
+        <!-- Logo from static files -->
+        <img src="{% static 'css/logo.png' %}" alt="KIUF Logo">
       </div>
       <div class="brand-name">Korea International University</div>
       <div class="brand-sub">Farg'ona &nbsp;·&nbsp; Elektron Kutubxona</div>
@@ -371,11 +369,14 @@
         </label>
         <div class="input-wrapper">
           <input
-            type="date"
+            type="text"
             name="{{ form.birth_date.name }}"
             id="{{ form.birth_date.id_for_label }}"
             class="form-control-custom"
-            placeholder="DD.MM.YYYY"
+            placeholder="KUN.OY.YIL (15.06.2000)"
+            maxlength="10"
+            autocomplete="off"
+            spellcheck="false"
             value="{{ form.birth_date.value|default:'' }}"
           >
           <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -383,7 +384,7 @@
             <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
         </div>
-
+        
         {% if form.birth_date.errors %}
           <div class="alert alert-danger" style="background: rgba(220, 50, 50, 0.12); border: 1px solid rgba(220, 50, 50, 0.3); color: #ff7070; border-radius: 10px; padding: 10px 14px; font-size: 0.82rem; margin-bottom: 1rem;">
             {% for error in form.birth_date.errors %}
@@ -405,6 +406,11 @@
 
     <p class="card-footer-text">
       Muammo yuzaga keldimi? &nbsp;<a href="#">IT qo'llab-quvvatlash</a> &nbsp;·&nbsp; <a href="https://t.me/asadbek_dev">Yordam</a>
+      {% if user.is_staff or user.is_superuser %}
+        &nbsp;·&nbsp; <a href="{% url 'admin:index' %}">Admin Panel</a>
+      {% else %}
+        &nbsp;·&nbsp; <a href="{% url 'admin:index' %}" style="opacity: 0.5; cursor: default;">Admin Panel</a>
+      {% endif %}
     </p>
   </div>
 
@@ -430,17 +436,40 @@
     }
   })();
 
-  const input = document.getElementById('{{ form.hemis_id.id_for_label }}');
+  const hamisIdInput = document.getElementById('{{ form.hemis_id.id_for_label }}');
 
-  input.addEventListener('keydown', function(e) {
+  hamisIdInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
-      input.form.submit();
+      hamisIdInput.form.submit();
     }
   });
 
-  input.addEventListener('input', function() {
+  hamisIdInput.addEventListener('input', function() {
     this.value = this.value.toUpperCase();
+  });
+
+  // Date input formatting DD.MM.YYYY
+  const birthDateInput = document.getElementById('{{ form.birth_date.id_for_label }}');
+  
+  birthDateInput.addEventListener('input', function(e) {
+    let value = this.value.replace(/\D/g, ''); // Remove non-digits
+    
+    if (value.length > 2) {
+      value = value.substring(0, 2) + '.' + value.substring(2);
+    }
+    if (value.length > 5) {
+      value = value.substring(0, 5) + '.' + value.substring(5, 9);
+    }
+    
+    this.value = value;
+  });
+
+  birthDateInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      birthDateInput.form.submit();
+    }
   });
 </script>
 

@@ -45,7 +45,7 @@ class Student(AbstractUser):
     hemis_id = models.CharField(max_length=20, unique=True, verbose_name="HEMIS ID")
     full_name = models.CharField(max_length=100, verbose_name="To'liq ism")
     faculty = models.CharField(max_length=100, verbose_name="Fakultet")
-    year = models.IntegerField(verbose_name="Kurs")
+    year = models.IntegerField(null=True, blank=True, verbose_name="Kurs")
     birth_date = models.DateField(null=True, blank=True, verbose_name="Tug'ilgan kun")
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -53,7 +53,7 @@ class Student(AbstractUser):
     objects = StudentManager()
 
     USERNAME_FIELD = 'hemis_id'
-    REQUIRED_FIELDS = ['full_name', 'faculty', 'year']
+    REQUIRED_FIELDS = ['full_name', 'faculty']
 
     class Meta:
         verbose_name = "Talaba"

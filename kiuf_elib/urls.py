@@ -19,9 +19,17 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from unfold.sites import UnfoldAdminSite
+from accounts.forms import CustomAdminLoginForm
 
-admin.site.__class__ = UnfoldAdminSite
-admin.site.suite = 'dark'
+# Custom Unfold Admin Site
+class CustomUnfoldAdminSite(UnfoldAdminSite):
+    login_form = CustomAdminLoginForm
+
+# Admin site-ni o'zgartirish
+admin.site.__class__ = CustomUnfoldAdminSite
+admin.site.site_title = "Kutubxona Admini"
+admin.site.site_header = "Kutubxona Admini"
+admin.site.index_title = "Kutubxona Admin Paneli"
 
 urlpatterns = [
     path('admin/', admin.site.urls),

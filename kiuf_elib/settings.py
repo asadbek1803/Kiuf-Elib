@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ['itopik.uz', 'www.itopik.uz', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'apscheduler',
+    'django_apscheduler',
     'unfold',
     'unfold.contrib.filters',
     'unfold.contrib.forms',
@@ -80,12 +82,57 @@ WSGI_APPLICATION = 'kiuf_elib.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# PostgreSQL Database Configuration
+# Quyidagi qadamlar bilan PostgreSQL-ni sozlash mumkin:
+# 1. Tizimingizda PostgreSQL serverini o'rnating.
+#    - Windows uchun: https://www.postgresql.org/download/windows/ saytidan yuklab oling
+#    - Linux/Mac uchun: paket menejeridan foydalaning (apt install postgresql, brew install postgresql)
+# 2. PostgreSQL xizmatini ishga tushiring.
+# 3. Ma'lumotlar bazasi foydalanuvchisini va bazasini yarating:
+#    - psql yoki pgAdmin-ni oching
+#    - CREATE DATABASE your_db_name;
+#    - CREATE USER your_username WITH PASSWORD 'your_password';
+#    - GRANT ALL PRIVILEGES ON DATABASE your_db_name TO your_username;
+# 4. Python PostgreSQL adapterini o'rnating:
+#    - pip install psycopg2-binary
+#    - requirements.txt fayliga 'psycopg2-binary' qo'shing
+# 5. Quyidagi DATABASES sozlamasini haqiqiy ma'lumotlar bazasi tafsilotlari bilan yangilang.
+# 6. Migratsiyalarni ishga tushiring: python manage.py migrate
+# 7. Agar SQLite-dan migratsiya qilsangiz, ma'lumotlarni dump qilib, tiklash kerak bo'lishi mumkin.
+# Agar PostgreSQL mavjud bo'lmasa yoki ulana olmasa, avtomatik ravishda SQLite ishlatiladi.
+# Qo'shimcha hujjatlar: https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+# PostgreSQL-ni sinab ko'rish, agar ulana olmasa yoki o'rnatilmagan bo'lsa, SQLite fallback
+try:
+    import psycopg2
+    # Ulashishni sinab ko'rish
+    conn = psycopg2.connect(
+        dbname='your_db_name',  # O'zingizning ma'lumotlar bazasi nomini kiriting
+        user='your_username',  # Ma'lumotlar bazasi foydalanuvchisini kiriting
+        password='your_password',  # Parolni kiriting
+        host='localhost',  # Ma'lumotlar bazasi hosti, odatda localhost
+        port='5432'  # PostgreSQL-ning standart porti
+    )
+    conn.close()
+    # Agar ulanish muvaffaqiyatli bo'lsa, PostgreSQL ishlatiladi
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'your_db_name',  # O'zingizning ma'lumotlar bazasi nomini kiriting
+            'USER': 'your_username',  # Ma'lumotlar bazasi foydalanuvchisini kiriting
+            'PASSWORD': 'your_password',  # Parolni kiriting
+            'HOST': 'localhost',  # Ma'lumotlar bazasi hosti, odatda localhost
+            'PORT': '5432',  # PostgreSQL-ning standart porti
+        }
     }
-}
+except (ImportError, psycopg2.OperationalError):
+    # psycopg2 o'rnatilmagan yoki ulana olmasa, SQLite ishlatiladi
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -182,3 +229,35 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Session settings
 SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_SAVE_EVERY_REQUEST = True
+
+# Unfold Admin Configuration
+UNFOLD = {
+    "SITE_TITLE": "Kutubxona Admini",
+    "SITE_HEADER": "Kutubxona Admini",
+    "SITE_URL": "/",
+    "SITE_ICON": lambda request: "/static/css/logo.png",
+    "THEME": "dark",
+    "LOGIN": {
+        "image": lambda request: "/static/css/logo.png",
+        "redirect_after": lambda request: "/admin/",
+    },
+    "COLORS": {
+        "primary": {
+            "50": "#eff6ff",
+            "100": "#dbeafe",
+            "200": "#bfdbfe",
+            "300": "#93c5fd",
+            "400": "#60a5fa",
+            "500": "#3b82f6",
+            "600": "#2563eb",
+            "700": "#1d4ed8",
+            "800": "#1e40af",
+            "900": "#1e3a8a",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [],
+    },
+}

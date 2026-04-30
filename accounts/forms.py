@@ -1,5 +1,21 @@
 from django import forms
 from .models import Student
+from django.contrib.admin.forms import AdminAuthenticationForm
+
+class CustomAdminLoginForm(AdminAuthenticationForm):
+    username = forms.CharField(
+        label="Login",  # "HEMIS ID" o'rniga "Login"
+        widget=forms.TextInput(attrs={
+            'autofocus': True,
+            'placeholder': 'Login kiriting',
+        })
+    )
+    password = forms.CharField(
+        label="Parol",
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Parol kiriting',
+        })
+    )
 
 
 class LoginForm(forms.Form):
@@ -37,16 +53,16 @@ class StudentAddForm(forms.ModelForm):
 
 class SuperUserAddForm(forms.Form):
     hemis_id = forms.CharField(
-        label="HEMIS ID",
+        label="Login",
         max_length=20,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'HEMIS ID kiriting yoki Login',
+            'placeholder': 'Login kiriting',
             'autofocus': True
         })
     )
     password = forms.CharField(
-        label="Password",
+        label="Parol",
         max_length=128,
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
